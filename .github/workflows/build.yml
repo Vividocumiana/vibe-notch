@@ -1,0 +1,26 @@
+name: Build app
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [vscode-claude-desktop]
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build (unsigned)
+        run: |
+          xcodebuild -scheme ClaudeIsland -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="" PROVISIONING_PROFILE_SPECIFIER="" build
+      - name: Zip app
+        run: |
+          cd build/Build/Products/Release
+          ditto -c -k --keepParent *.app VibeNotch.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VibeNotch
+          path: build/Build/Products/Release/VibeNotch.zip
