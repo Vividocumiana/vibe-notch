@@ -29,7 +29,7 @@
 
 ## Requirements
 
-- macOS 15.6+
+- macOS 14.0+
 - Claude Code CLI
 
 ## Install

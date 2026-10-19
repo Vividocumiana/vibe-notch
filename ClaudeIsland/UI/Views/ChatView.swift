@@ -307,11 +307,7 @@ struct ChatView: View {
                 .animation(.spring(response: 0.3, dampingFraction: 0.8), value: history.count)
             }
             .scaleEffect(x: 1, y: -1)
-            .onScrollGeometryChange(for: Bool.self) { geometry in
-                // Check if we're near the top of the content (which is bottom in inverted view)
-                // contentOffset.y near 0 means at bottom, larger means scrolled up
-                geometry.contentOffset.y < 50
-            } action: { wasAtBottom, isNowAtBottom in
+            .modifier(ScrollAtBottomObserver { wasAtBottom, isNowAtBottom in
                 if wasAtBottom && !isNowAtBottom {
                     // User scrolled away from bottom
                     pauseAutoscroll()
@@ -319,7 +315,7 @@ struct ChatView: View {
                     // User scrolled back to bottom
                     resumeAutoscroll()
                 }
-            }
+            })
             .onChange(of: shouldScrollToBottom) { _, shouldScroll in
                 if shouldScroll {
                     withAnimation(.easeOut(duration: 0.3)) {
@@ -1225,6 +1221,26 @@ struct NewMessagesIndicator: View {
             withAnimation(.spring(response: 0.2, dampingFraction: 0.7)) {
                 isHovering = hovering
             }
+        }
+    }
+}
+
+/// Observes whether the (inverted) chat scroll view is at the bottom.
+/// `onScrollGeometryChange` needs macOS 15; on macOS 14 auto-scroll simply
+/// never pauses, which keeps the chat usable.
+private struct ScrollAtBottomObserver: ViewModifier {
+    let action: (Bool, Bool) -> Void
+
+    func body(content: Content) -> some View {
+        if #available(macOS 15.0, *) {
+            content.onScrollGeometryChange(for: Bool.self) { geometry in
+                // contentOffset.y near 0 means at bottom in the inverted view
+                geometry.contentOffset.y < 50
+            } action: { old, new in
+                action(old, new)
+            }
+        } else {
+            content
         }
     }
 }
