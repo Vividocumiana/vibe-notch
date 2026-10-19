@@ -24,6 +24,7 @@
 - **Live Session Monitoring** — Track multiple Claude Code sessions in real-time
 - **Permission Approvals** — Approve or deny tool executions directly from the notch
 - **Chat History** — View full conversation history with markdown rendering
+- **Works everywhere** — Terminals, VS Code (and Cursor, Windsurf, VSCodium) and the Claude desktop app
 - **Auto-Setup** — Hooks install automatically on first launch
 
 ## Requirements
