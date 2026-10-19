@@ -13,6 +13,7 @@ jobs:
       - name: Build (unsigned)
         shell: bash
         run: |
+          set +eo pipefail
           xcodebuild -scheme ClaudeIsland -configuration Release \
             -derivedDataPath build \
             CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGN_STYLE=Manual \
@@ -25,6 +26,7 @@ jobs:
           exit $status
       - name: Zip app
         run: |
+          set +eo pipefail
           cd build/Build/Products/Release
           ditto -c -k --keepParent *.app VibeNotch.zip
       - uses: actions/upload-artifact@v4
